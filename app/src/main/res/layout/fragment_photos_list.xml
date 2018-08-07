@@ -4,7 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/activity_main_container"
-    tools:context=".ui.MainActivity">
+    tools:context=".ui.PhotosListFragment">
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/frag_photos_list_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </FrameLayout>
