@@ -2,6 +2,7 @@ package ru.belogurow.alphasplash.ui
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import ru.belogurow.alphasplash.Application
 import ru.belogurow.alphasplash.Const
 import ru.belogurow.alphasplash.R
 import ru.belogurow.unsplashclient.UnsplashClient
@@ -22,5 +23,10 @@ class MainActivity : AppCompatActivity() {
         transaction.commit()
 
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Application.watchObject(this)
     }
 }

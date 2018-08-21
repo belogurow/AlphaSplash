@@ -27,7 +27,7 @@ class PhotoAdapter(private val context: Context) : RecyclerView.Adapter<PhotoAda
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val photoResponse = photos?.get(position)
         Glide.with(context)
-            .load(photoResponse?.urls?.small)
+            .load(photoResponse?.urls?.full)
             .into(holder.imageViewPhoto)
     }
 

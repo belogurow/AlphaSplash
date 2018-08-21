@@ -11,6 +11,7 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
+import ru.belogurow.alphasplash.Application
 import ru.belogurow.alphasplash.Const
 import ru.belogurow.alphasplash.R
 import ru.belogurow.alphasplash.adapter.PhotoAdapter
@@ -50,13 +51,20 @@ class PhotosListFragment : Fragment() {
         val unsplashClient = UnsplashClient(Const.UNSPLASH_KEY)
 
 
-        launch(UI) {
-            val result = withContext(CommonPool) { unsplashClient.popularPhotos(1, 10) }
+        val job = launch(UI) {
+            val result = withContext(CommonPool) { unsplashClient.popularPhotos(1, 20) }
 
             if (result.isSuccessful && result.code() == 200) {
                 photoAdapter.photos = result.body()
             }
         }
+
+        Application.watchObject(job)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Application.watchObject(this)
     }
 
 
