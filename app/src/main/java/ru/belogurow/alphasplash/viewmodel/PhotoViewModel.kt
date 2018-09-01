@@ -24,10 +24,10 @@ class PhotoViewModel(private val unsplashClient: UnsplashClient) : ViewModel() {
                 val result = withContext(CommonPool) { unsplashClient.popularPhotos(page, perPage) }
 
 
-                if (result.isSuccessful && result.code() == 200) {
-                    popularPhotos?
-                    popularPhotos.value(result.body())
-                }
+//                if (result.isSuccessful && result.code() == 200) {
+//                    popularPhotos?
+//                    popularPhotos.value(result.body())
+//                }
             }
         }
 

@@ -1,16 +1,26 @@
 package ru.belogurow.alphasplash.adapter
 
-import android.content.Context
+import android.graphics.drawable.Drawable
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import com.bumptech.glide.Glide
+import com.bumptech.glide.ListPreloader
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.RequestManager
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.bumptech.glide.request.RequestOptions
+import ru.belogurow.alphasplash.CurrentDisplay
 import ru.belogurow.alphasplash.R
 import ru.belogurow.unsplashclient.model.PhotoResponse
 
-class PhotoAdapter(private val context: Context) : RecyclerView.Adapter<PhotoAdapter.ViewHolder>() {
+class PhotoAdapter(var glideRequests: RequestManager,
+                   var currentDisplay: CurrentDisplay): RecyclerView.Adapter<PhotoAdapter.ViewHolder>(),
+        ListPreloader.PreloadModelProvider<PhotoResponse>,
+        ListPreloader.PreloadSizeProvider<PhotoResponse> {
+
+    private var requestBuilder: RequestBuilder<Drawable> = glideRequests.asDrawable()
 
     var photos: List<PhotoResponse>? = null
         set(value) {
@@ -18,20 +28,59 @@ class PhotoAdapter(private val context: Context) : RecyclerView.Adapter<PhotoAda
             notifyDataSetChanged()
         }
 
+//    init {
+////        setHasStableIds(true)
+//
+//    }
+
     class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        var imageViewPhoto: ImageView = view.findViewById(R.id.item_photo_image)
+        var imageViewPhoto: ImageView = view.findViewById(R.id.item_photo_image2)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(LayoutInflater.from(context).inflate(R.layout.item_photo, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_photo2, parent, false))
+    }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val photoResponse = photos?.get(position)
-        Glide.with(context)
-            .load(photoResponse?.urls?.full)
-            .into(holder.imageViewPhoto)
+
+        glideRequests
+                .asDrawable()
+                .load(photoResponse?.urls?.regular)
+                .transition(withCrossFade())
+                .apply(RequestOptions()
+                        .centerCrop()
+                        .override(currentDisplay.widthPx, currentDisplay.heightPx))
+//                        .dskCacheStrategy(DiskCacheStrategy.RESOURCE))
+                .into(holder.imageViewPhoto)
     }
 
+    override fun onViewRecycled(holder: ViewHolder) {
+        super.onViewRecycled(holder)
+
+        glideRequests.clear(holder.imageViewPhoto)
+        holder.imageViewPhoto.setImageDrawable(null)
+    }
+
+//    override fun getItemId(position: Int) = photos?.get(position)?.id?.toLong()!!
+
+    override fun getItemViewType(position: Int) = 0
 
     override fun getItemCount() = photos?.size ?: 0
+
+    override fun getPreloadItems(position: Int): MutableList<PhotoResponse?> {
+        return mutableListOf(photos?.get(position))
+    }
+
+    override fun getPreloadRequestBuilder(item: PhotoResponse): RequestBuilder<*>? {
+        return glideRequests
+                .load(item)
+//                .transition(withCrossFade())
+
+    }
+
+    override fun getPreloadSize(item: PhotoResponse, adapterPosition: Int, perItemPosition: Int): IntArray? {
+        return intArrayOf(currentDisplay.widthPx, currentDisplay.heightPx)
+    }
 
 }
