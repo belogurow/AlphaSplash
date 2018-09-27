@@ -1,9 +1,11 @@
 package ru.belogurow.alphasplash.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
@@ -18,6 +20,7 @@ import ru.belogurow.alphasplash.R
 import ru.belogurow.alphasplash.adapter.PhotoAdapter
 import ru.belogurow.alphasplash.util.Const
 import ru.belogurow.alphasplash.util.DisplayUtil
+import ru.belogurow.alphasplash.util.EndlessRecyclerViewScrollListener
 import ru.belogurow.unsplashclient.UnsplashClient
 import ru.belogurow.unsplashclient.model.PhotoResponse
 
@@ -69,12 +72,22 @@ class PhotosListFragment() : androidx.fragment.app.Fragment() {
         val currentDisplay = CurrentDisplay(DisplayUtil.getScreenWidthInPx(requireContext()), DisplayUtil.dpToPx(250, requireContext()))
 
         photoAdapter = PhotoAdapter(glideRequest, currentDisplay)
-        loadNewPhotos(page, 35)
+        loadNewPhotos(page, 30)
 
         val photosPreloader: RecyclerViewPreloader<PhotoResponse> =
-                RecyclerViewPreloader(glideRequest, photoAdapter, photoAdapter, 4)
+                RecyclerViewPreloader(glideRequest, photoAdapter, photoAdapter, 6)
+
+        val endlessRecyclerViewScrollListener = object : EndlessRecyclerViewScrollListener(layoutManager) {
+            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
+                Log.d("page", page.toString())
+                Log.d("totalItemsCount", totalItemsCount.toString())
+                loadNewPhotos(page, 30)
+            }
+
+        }
 
         recyclerViewPhotos.addOnScrollListener(photosPreloader)
+        recyclerViewPhotos.addOnScrollListener(endlessRecyclerViewScrollListener)
         recyclerViewPhotos.adapter = photoAdapter
     }
 
@@ -82,8 +95,10 @@ class PhotosListFragment() : androidx.fragment.app.Fragment() {
         launch(UI, parent = parentJob) {
             val result = withContext(CommonPool) { unsplashClient.latestPhotos(page, perPage) }
 
-            if (result.isSuccessful && result.code() == 200) {
-                photoAdapter.photos = result.body()
+            if (result.isSuccessful && result.code() == 200 && result.body() != null) {
+//                photoAdapter.photos = result.body()
+                Toast.makeText(context, "loaded", Toast.LENGTH_SHORT).show()
+                photoAdapter.addPhotos(result.body()!!)
             }
         }
 

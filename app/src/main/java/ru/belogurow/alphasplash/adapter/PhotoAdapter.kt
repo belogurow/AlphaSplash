@@ -22,11 +22,18 @@ class PhotoAdapter(private var glideRequests: RequestManager,
 
     private var requestBuilder: RequestBuilder<Drawable> = glideRequests.asDrawable()
 
-    var photos: List<PhotoResponse>? = null
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+    var photos: MutableList<PhotoResponse> = mutableListOf()
+//        set(value) {
+//            field = value
+//            notifyDataSetChanged()
+//        }
+
+    fun addPhotos(newPhotos: List<PhotoResponse>) {
+        val photoSize = photos.size
+        photos.addAll(newPhotos)
+        notifyItemRangeInserted(photoSize, newPhotos.size)
+//        notifyDataSetChanged()
+    }
 
 //    init {
 ////        setHasStableIds(true)
@@ -42,11 +49,11 @@ class PhotoAdapter(private var glideRequests: RequestManager,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val photoResponse = photos?.get(position)
+        val photoResponse = photos.get(position)
 
         glideRequests
-                .asDrawable()
-                .load(photoResponse?.urls?.regular)
+                //.asDrawable()
+                .load(photoResponse.urls?.regular)
                 .transition(withCrossFade())
                 .apply(RequestOptions()
                         .centerCrop().diskCacheStrategy(DiskCacheStrategy.RESOURCE))
@@ -64,10 +71,10 @@ class PhotoAdapter(private var glideRequests: RequestManager,
 
 //    override fun getItemViewType(position: Int) = 0
 
-    override fun getItemCount() = photos?.size ?: 0
+    override fun getItemCount() = photos.size ?: 0
 
     override fun getPreloadItems(position: Int): MutableList<PhotoResponse?> {
-        return mutableListOf(photos?.get(position))
+        return mutableListOf(photos[position])
     }
 
     override fun getPreloadRequestBuilder(item: PhotoResponse): RequestBuilder<*>? {

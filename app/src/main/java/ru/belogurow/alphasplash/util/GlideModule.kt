@@ -11,4 +11,6 @@ class GlideModule: AppGlideModule() {
     override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
 //        registry.append(PhotoResponse::class.java, InputStream::class.java, )
     }
+
+
 }
