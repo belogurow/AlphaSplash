@@ -9,14 +9,15 @@ import android.widget.ImageView
 import com.bumptech.glide.ListPreloader
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.RequestManager
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestOptions
 import ru.belogurow.alphasplash.CurrentDisplay
 import ru.belogurow.alphasplash.R
 import ru.belogurow.unsplashclient.model.PhotoResponse
 
-class PhotoAdapter(var glideRequests: RequestManager,
-                   var currentDisplay: CurrentDisplay): RecyclerView.Adapter<PhotoAdapter.ViewHolder>(),
+class PhotoAdapter(private var glideRequests: RequestManager,
+                   private var currentDisplay: CurrentDisplay): RecyclerView.Adapter<PhotoAdapter.ViewHolder>(),
         ListPreloader.PreloadModelProvider<PhotoResponse>,
         ListPreloader.PreloadSizeProvider<PhotoResponse> {
 
@@ -49,9 +50,7 @@ class PhotoAdapter(var glideRequests: RequestManager,
                 .load(photoResponse?.urls?.regular)
                 .transition(withCrossFade())
                 .apply(RequestOptions()
-                        .centerCrop()
-                        .override(currentDisplay.widthPx, currentDisplay.heightPx))
-//                        .dskCacheStrategy(DiskCacheStrategy.RESOURCE))
+                        .centerCrop().diskCacheStrategy(DiskCacheStrategy.RESOURCE))
                 .into(holder.imageViewPhoto)
     }
 
@@ -64,7 +63,7 @@ class PhotoAdapter(var glideRequests: RequestManager,
 
 //    override fun getItemId(position: Int) = photos?.get(position)?.id?.toLong()!!
 
-    override fun getItemViewType(position: Int) = 0
+//    override fun getItemViewType(position: Int) = 0
 
     override fun getItemCount() = photos?.size ?: 0
 
@@ -75,6 +74,8 @@ class PhotoAdapter(var glideRequests: RequestManager,
     override fun getPreloadRequestBuilder(item: PhotoResponse): RequestBuilder<*>? {
         return glideRequests
                 .load(item)
+                .apply(RequestOptions()
+                        .override(currentDisplay.widthPx, currentDisplay.heightPx))
 //                .transition(withCrossFade())
 
     }

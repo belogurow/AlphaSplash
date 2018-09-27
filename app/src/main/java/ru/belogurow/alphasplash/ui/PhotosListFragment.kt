@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
@@ -30,6 +31,8 @@ class PhotosListFragment() : Fragment() {
     private lateinit var recyclerViewPhotos: RecyclerView
     private lateinit var photoAdapter: PhotoAdapter
     private val unsplashClient = UnsplashClient(Const.UNSPLASH_KEY)
+
+    private var parentJob = Job()
 
     private var page: Int = 1
 
@@ -71,14 +74,14 @@ class PhotosListFragment() : Fragment() {
         loadNewPhotos(page, 35)
 
         val photosPreloader: RecyclerViewPreloader<PhotoResponse> =
-                RecyclerViewPreloader(Glide.with(this), photoAdapter, photoAdapter, 2)
+                RecyclerViewPreloader(glideRequest, photoAdapter, photoAdapter, 4)
 
         recyclerViewPhotos.addOnScrollListener(photosPreloader)
         recyclerViewPhotos.adapter = photoAdapter
     }
 
     private fun loadNewPhotos(page: Int, perPage: Int) {
-        launch(UI) {
+        launch(UI, parent = parentJob) {
             val result = withContext(CommonPool) { unsplashClient.latestPhotos(page, perPage) }
 
             if (result.isSuccessful && result.code() == 200) {
@@ -91,6 +94,7 @@ class PhotosListFragment() : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        parentJob.cancel()
         Application.watchObject(this)
     }
 }

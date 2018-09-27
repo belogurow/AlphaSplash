@@ -2,15 +2,17 @@ package ru.belogurow.alphasplash.ui
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.bumptech.glide.MemoryCategory
 import ru.belogurow.alphasplash.Application
 import ru.belogurow.alphasplash.R
+import ru.belogurow.alphasplash.util.GlideApp
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-//        GlideApp.get(this).setMemoryCategory(MemoryCategory.HIGH);
+        GlideApp.get(this).setMemoryCategory(MemoryCategory.HIGH);
 
         val photosListFragment = PhotosListFragment()
         supportFragmentManager
