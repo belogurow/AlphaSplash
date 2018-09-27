@@ -1,12 +1,10 @@
 package ru.belogurow.alphasplash.ui
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import kotlinx.coroutines.experimental.CommonPool
@@ -24,11 +22,11 @@ import ru.belogurow.unsplashclient.UnsplashClient
 import ru.belogurow.unsplashclient.model.PhotoResponse
 
 
-class PhotosListFragment() : Fragment() {
+class PhotosListFragment() : androidx.fragment.app.Fragment() {
 
     private val TAG = PhotosListFragment::class.java.simpleName
 
-    private lateinit var recyclerViewPhotos: RecyclerView
+    private lateinit var recyclerViewPhotos: androidx.recyclerview.widget.RecyclerView
     private lateinit var photoAdapter: PhotoAdapter
     private val unsplashClient = UnsplashClient(Const.UNSPLASH_KEY)
 
@@ -62,8 +60,8 @@ class PhotosListFragment() : Fragment() {
     private fun initViews(view: View) {
         recyclerViewPhotos = view.findViewById(R.id.frag_photos_list_recycler)
 
-        val layoutManager = LinearLayoutManager(activity)
-        layoutManager.orientation = RecyclerView.VERTICAL
+        val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
+        layoutManager.orientation = androidx.recyclerview.widget.RecyclerView.VERTICAL
         recyclerViewPhotos.layoutManager = layoutManager
         recyclerViewPhotos.setHasFixedSize(true)
 

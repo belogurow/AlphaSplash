@@ -9,7 +9,7 @@ internal object OkHttpFactory {
 
         httpClient.addInterceptor {
             val requestBuilder = it.request().newBuilder()
-            headers.forEach { key, value ->
+            headers.forEach { (key, value) ->
                 requestBuilder.addHeader(key, value)
             }
 

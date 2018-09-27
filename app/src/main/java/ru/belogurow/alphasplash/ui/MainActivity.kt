@@ -1,7 +1,7 @@
 package ru.belogurow.alphasplash.ui
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.MemoryCategory
 import ru.belogurow.alphasplash.Application
 import ru.belogurow.alphasplash.R

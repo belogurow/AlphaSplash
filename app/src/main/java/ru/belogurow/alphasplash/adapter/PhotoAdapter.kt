@@ -1,7 +1,6 @@
 package ru.belogurow.alphasplash.adapter
 
 import android.graphics.drawable.Drawable
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +16,7 @@ import ru.belogurow.alphasplash.R
 import ru.belogurow.unsplashclient.model.PhotoResponse
 
 class PhotoAdapter(private var glideRequests: RequestManager,
-                   private var currentDisplay: CurrentDisplay): RecyclerView.Adapter<PhotoAdapter.ViewHolder>(),
+                   private var currentDisplay: CurrentDisplay): androidx.recyclerview.widget.RecyclerView.Adapter<PhotoAdapter.ViewHolder>(),
         ListPreloader.PreloadModelProvider<PhotoResponse>,
         ListPreloader.PreloadSizeProvider<PhotoResponse> {
 
@@ -34,7 +33,7 @@ class PhotoAdapter(private var glideRequests: RequestManager,
 //
 //    }
 
-    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(val view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
         var imageViewPhoto: ImageView = view.findViewById(R.id.item_photo_image2)
     }
 
