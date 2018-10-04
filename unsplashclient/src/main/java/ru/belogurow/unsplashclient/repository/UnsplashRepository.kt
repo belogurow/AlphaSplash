@@ -5,7 +5,7 @@ import ru.belogurow.unsplashclient.model.PhotoSort
 
 internal class UnsplashRepository(private val unsplashService: UnsplashApiService) {
 
-    suspend fun photos(page: Int, perPage: Int, photoSort: PhotoSort) = unsplashService.photos(page.toString(), perPage.toString(), photoSort.sort).await()
+    fun photos(page: Int, perPage: Int, photoSort: PhotoSort) = unsplashService.photos(page.toString(), perPage.toString(), photoSort.sort)
 
-    suspend fun photoById(photoId: String) = unsplashService.photoById(photoId).await()
+    fun photoById(photoId: String) = unsplashService.photoById(photoId)
 }

@@ -34,7 +34,7 @@ task clean(type: Delete) {
 
 ext {
     androidx_version = '1.0.0'
-    coroutines_version = '0.24.0'
+    coroutines_version = '0.26.0'
     retrofit_version = '2.4.0'
     okhttp_version = '3.8.1'
     retrofit_coroutines_version_jakewharton = '1.0.0'

@@ -11,9 +11,11 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestOptions
-import ru.belogurow.alphasplash.CurrentDisplay
 import ru.belogurow.alphasplash.R
+import ru.belogurow.alphasplash.util.CurrentDisplay
 import ru.belogurow.unsplashclient.model.PhotoResponse
+
+// TODO REFACTOR TO https://developer.android.com/topic/libraries/architecture/paging/
 
 class PhotoAdapter(private var glideRequests: RequestManager,
                    private var currentDisplay: CurrentDisplay): androidx.recyclerview.widget.RecyclerView.Adapter<PhotoAdapter.ViewHolder>(),
@@ -49,7 +51,7 @@ class PhotoAdapter(private var glideRequests: RequestManager,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val photoResponse = photos.get(position)
+        val photoResponse = photos[position]
 
         glideRequests
                 //.asDrawable()

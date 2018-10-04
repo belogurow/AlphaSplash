@@ -5,20 +5,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
-import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import ru.belogurow.alphasplash.Application
-import ru.belogurow.alphasplash.CurrentDisplay
 import ru.belogurow.alphasplash.R
 import ru.belogurow.alphasplash.adapter.PhotoAdapter
 import ru.belogurow.alphasplash.util.Const
+import ru.belogurow.alphasplash.util.CurrentDisplay
 import ru.belogurow.alphasplash.util.DisplayUtil
 import ru.belogurow.alphasplash.util.EndlessRecyclerViewScrollListener
 import ru.belogurow.unsplashclient.UnsplashClient
@@ -35,7 +36,10 @@ class PhotosListFragment() : androidx.fragment.app.Fragment() {
 
     private var parentJob = Job()
 
-    private var page: Int = 1
+    private var page = 1
+    private var perPage = 30
+
+    private lateinit var viewModel: LatestPhotoViewModel
 
 //    companion object {
 //        @JvmStatic
@@ -43,6 +47,15 @@ class PhotosListFragment() : androidx.fragment.app.Fragment() {
 //            arguments = Bundle().apply {}
 //        }
 //    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel = ViewModelProviders.of(this).get(LatestPhotoViewModel::class.java)
+
+        viewModel.load(page, perPage).observe(this, Observer {
+            photoAdapter.addPhotos(it)
+        })
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,8 +67,6 @@ class PhotosListFragment() : androidx.fragment.app.Fragment() {
         val view = inflater.inflate(R.layout.fragment_photos_list, container, false);
 
         initViews(view)
-
-//        Application.watchObject(this)
 
         return view
     }
@@ -72,7 +83,7 @@ class PhotosListFragment() : androidx.fragment.app.Fragment() {
         val currentDisplay = CurrentDisplay(DisplayUtil.getScreenWidthInPx(requireContext()), DisplayUtil.dpToPx(250, requireContext()))
 
         photoAdapter = PhotoAdapter(glideRequest, currentDisplay)
-        loadNewPhotos(page, 30)
+        loadNewPhotos(page, perPage)
 
         val photosPreloader: RecyclerViewPreloader<PhotoResponse> =
                 RecyclerViewPreloader(glideRequest, photoAdapter, photoAdapter, 6)
@@ -81,7 +92,7 @@ class PhotosListFragment() : androidx.fragment.app.Fragment() {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
                 Log.d("page", page.toString())
                 Log.d("totalItemsCount", totalItemsCount.toString())
-                loadNewPhotos(page, 30)
+                loadNewPhotos(page, perPage)
             }
 
         }
@@ -93,12 +104,15 @@ class PhotosListFragment() : androidx.fragment.app.Fragment() {
 
     private fun loadNewPhotos(page: Int, perPage: Int) {
         launch(UI, parent = parentJob) {
-            val result = withContext(CommonPool) { unsplashClient.latestPhotos(page, perPage) }
+//            val result = withContext(CommonPool) { unsplashClient.latestPhotos(page, perPage) }
+            val photosDeferred = withContext(DefaultDispatcher) { unsplashClient.latestPhotos(page, perPage) }
 
-            if (result.isSuccessful && result.code() == 200 && result.body() != null) {
+            val photosResult = photosDeferred.await()
+
+            if (photosResult.isSuccessful && photosResult.code() == 200 && photosResult.body() != null) {
 //                photoAdapter.photos = result.body()
-                Toast.makeText(context, "loaded", Toast.LENGTH_SHORT).show()
-                photoAdapter.addPhotos(result.body()!!)
+//                Toast.makeText(context, "loaded", Toast.LENGTH_SHORT).show()
+                photoAdapter.addPhotos(photosResult.body()!!)
             }
         }
 
