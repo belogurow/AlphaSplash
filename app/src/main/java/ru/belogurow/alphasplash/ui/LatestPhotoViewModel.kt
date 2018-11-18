@@ -2,12 +2,12 @@ package ru.belogurow.alphasplash.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.android.Main
+import kotlinx.coroutines.*
+//import kotlinx.coroutines.android.Main
 import ru.belogurow.alphasplash.util.Const
 import ru.belogurow.unsplashclient.UnsplashClient
 import ru.belogurow.unsplashclient.model.PhotoResponse
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.CoroutineContext
 
 class LatestPhotoViewModel : ViewModel(), CoroutineScope {
 
@@ -22,7 +22,6 @@ class LatestPhotoViewModel : ViewModel(), CoroutineScope {
     fun load(page: Int, perPage: Int) : MutableLiveData<List<PhotoResponse>> {
         this.launch(context = coroutineContext) {
             val photosDeferred = async { unsplashClient.latestPhotos(page, perPage) }
-
 
             val photosResult = photosDeferred.await()
             if (photosResult.isCompleted) {

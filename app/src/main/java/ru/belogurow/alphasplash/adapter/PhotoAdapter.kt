@@ -73,7 +73,7 @@ class PhotoAdapter(private var glideRequests: RequestManager,
 
 //    override fun getItemViewType(position: Int) = 0
 
-    override fun getItemCount() = photos.size ?: 0
+    override fun getItemCount() = photos.size
 
     override fun getPreloadItems(position: Int): MutableList<PhotoResponse?> {
         return mutableListOf(photos[position])

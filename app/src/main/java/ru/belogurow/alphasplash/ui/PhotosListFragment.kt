@@ -10,11 +10,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
-import kotlinx.coroutines.experimental.DefaultDispatcher
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.*
 import ru.belogurow.alphasplash.Application
 import ru.belogurow.alphasplash.R
 import ru.belogurow.alphasplash.adapter.PhotoAdapter
@@ -34,7 +30,7 @@ class PhotosListFragment() : androidx.fragment.app.Fragment() {
     private lateinit var photoAdapter: PhotoAdapter
     private val unsplashClient = UnsplashClient(Const.UNSPLASH_KEY)
 
-    private var parentJob = Job()
+    private var parentJob = Dispatchers.Main + Job()
 
     private var page = 1
     private var perPage = 30
@@ -64,7 +60,7 @@ class PhotosListFragment() : androidx.fragment.app.Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_photos_list, container, false);
+        val view = inflater.inflate(R.layout.fragment_photos_list, container, false)
 
         initViews(view)
 
@@ -103,9 +99,8 @@ class PhotosListFragment() : androidx.fragment.app.Fragment() {
     }
 
     private fun loadNewPhotos(page: Int, perPage: Int) {
-        launch(UI, parent = parentJob) {
-//            val result = withContext(CommonPool) { unsplashClient.latestPhotos(page, perPage) }
-            val photosDeferred = withContext(DefaultDispatcher) { unsplashClient.latestPhotos(page, perPage) }
+        GlobalScope.launch(parentJob) {
+            val photosDeferred = withContext(Dispatchers.IO) { unsplashClient.latestPhotos(page, perPage) }
 
             val photosResult = photosDeferred.await()
 

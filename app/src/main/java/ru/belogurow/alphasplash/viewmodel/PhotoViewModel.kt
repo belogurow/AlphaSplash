@@ -3,10 +3,7 @@ package ru.belogurow.alphasplash.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.*
 import ru.belogurow.unsplashclient.UnsplashClient
 import ru.belogurow.unsplashclient.model.PhotoResponse
 
@@ -17,11 +14,11 @@ class PhotoViewModel(private val unsplashClient: UnsplashClient) : ViewModel() {
 
     fun loadPopularPhotos(page: Int, perPage: Int): LiveData<List<PhotoResponse>>? {
         if (popularPhotos == null) {
-            jobs += launch {
+            jobs += GlobalScope.launch {
 
 
                 popularPhotos = MutableLiveData<List<PhotoResponse>>()
-                val result = withContext(CommonPool) { unsplashClient.popularPhotos(page, perPage) }
+                val result = withContext(Dispatchers.IO) { unsplashClient.popularPhotos(page, perPage) }
 
 
 //                if (result.isSuccessful && result.code() == 200) {

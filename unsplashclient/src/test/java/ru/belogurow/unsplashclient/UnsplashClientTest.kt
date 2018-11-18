@@ -1,6 +1,6 @@
 package ru.belogurow.unsplashclient
 
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 
@@ -11,8 +11,9 @@ class UnsplashClientTest {
     @Test
     fun testPopularPhotos10() {
         val result = runBlocking {
-            unsplashClient.popularPhotos(1, 10)
+            unsplashClient.popularPhotos(1, 10).await()
         }
+
 
         assert(result.isSuccessful)
         assert(result.code() == 200)
@@ -22,7 +23,7 @@ class UnsplashClientTest {
     @Test
     fun testLatestPhotos10() {
         val result = runBlocking {
-            unsplashClient.latestPhotos(1, 10)
+            unsplashClient.latestPhotos(1, 10).await()
         }
 
         assert(result.isSuccessful)
