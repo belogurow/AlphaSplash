@@ -22,7 +22,7 @@ import ru.belogurow.unsplashclient.UnsplashClient
 import ru.belogurow.unsplashclient.model.PhotoResponse
 
 
-class PhotosListFragment() : androidx.fragment.app.Fragment() {
+class PhotosListFragment : androidx.fragment.app.Fragment() {
 
     private val TAG = PhotosListFragment::class.java.simpleName
 
