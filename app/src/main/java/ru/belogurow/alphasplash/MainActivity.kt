@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        GlideApp.get(this).setMemoryCategory(MemoryCategory.HIGH);
+        GlideApp.get(this@MainActivity).setMemoryCategory(MemoryCategory.HIGH);
 
         val photosRepository = PhotosRepositoryImpl()
 //        val popularPhotoFragment = PopularPhotoFragment.newInstance()
@@ -94,16 +94,5 @@ class MainActivity : AppCompatActivity() {
                     .addToBackStack(newFragment.tag)
                     .commit()
         }
-    }
-
-    private fun addAllFragments() {
-        supportFragmentManager.beginTransaction()
-                .add(R.id.activity_main_container, latestPhotoFragment, latestPhotoFragment.tag)
-                .add(R.id.activity_main_container, popularPhotoFragment, popularPhotoFragment.tag)
-//                .add(R.id.activity_main_container, fragment, fragment.tag)
-//                .addToBackStack(null)
-                .commit()
-
-
     }
 }

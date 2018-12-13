@@ -8,9 +8,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import ru.belogurow.alphasplash.R
-import ru.belogurow.alphasplash.adapter.PhotoTextAdapter
+import ru.belogurow.alphasplash.adapter.PhotoAdapter
 import ru.belogurow.alphasplash.architecture.PhotoContract
+import ru.belogurow.alphasplash.util.CurrentDisplay
+import ru.belogurow.alphasplash.util.DisplayUtil
+import ru.belogurow.alphasplash.util.GlideApp
 import ru.belogurow.unsplashclient.model.PhotoResponse
 
 
@@ -20,7 +24,7 @@ class PopularPhotoFragment : Fragment(), PhotoContract.View {
 
     override lateinit var presenter: PhotoContract.Presenter
     private lateinit var photosRecycler: RecyclerView
-    private var photosAdapter = PhotoTextAdapter()
+    private lateinit var photosAdapter: PhotoAdapter
 
     override var isActive: Boolean = false
         get() = isAdded
@@ -35,9 +39,18 @@ class PopularPhotoFragment : Fragment(), PhotoContract.View {
         with(root) {
 
             photosRecycler = findViewById<RecyclerView>(R.id.photos_list_recycler).apply {
-                adapter = photosAdapter
+                val glideRequest = GlideApp.with(this@PopularPhotoFragment)
+                val currentDisplay = CurrentDisplay(DisplayUtil.getScreenWidthInPx(requireContext()), DisplayUtil.dpToPx(250, requireContext()))
+
+                photosAdapter = PhotoAdapter(glideRequest, currentDisplay)
+
+                val photosPreloader: RecyclerViewPreloader<PhotoResponse> =
+                        RecyclerViewPreloader(glideRequest, photosAdapter, photosAdapter, 6)
+
                 layoutManager = LinearLayoutManager(context)
+                adapter = photosAdapter
                 setHasFixedSize(true)
+                addOnScrollListener(photosPreloader)
             }
 
 

@@ -69,7 +69,7 @@ class PhotoAdapter(private var glideRequests: RequestManager,
         holder.imageViewPhoto.setImageDrawable(null)
     }
 
-//    override fun getItemId(position: Int) = photos?.get(position)?.id?.toLong()!!
+    override fun getItemId(position: Int) = position.toLong()
 
 //    override fun getItemViewType(position: Int) = 0
 
