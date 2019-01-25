@@ -8,4 +8,20 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.MainActivity" parent="AppTheme">
+        <item name="android:windowActivityTransitions">true</item>
+    </style>
+
+    <style name="AppTheme.PhotoDetailActivity" parent="AppTheme">
+        <item name="android:windowActivityTransitions">true</item>
+
+        <item name="android:windowSharedElementEnterTransition">
+            @transition/photo_detail_transition
+        </item>
+
+        <item name="android:windowSharedElementExitTransition">
+            @transition/photo_detail_transition
+        </item>
+    </style>
+
 </resources>

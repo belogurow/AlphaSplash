@@ -14,10 +14,7 @@ import kotlinx.coroutines.*
 import ru.belogurow.alphasplash.Application
 import ru.belogurow.alphasplash.R
 import ru.belogurow.alphasplash.adapter.PhotoAdapter
-import ru.belogurow.alphasplash.util.Const
-import ru.belogurow.alphasplash.util.CurrentDisplay
-import ru.belogurow.alphasplash.util.DisplayUtil
-import ru.belogurow.alphasplash.util.EndlessRecyclerViewScrollListener
+import ru.belogurow.alphasplash.util.*
 import ru.belogurow.unsplashclient.UnsplashClient
 import ru.belogurow.unsplashclient.model.PhotoResponse
 
@@ -78,7 +75,14 @@ class PhotosListFragment : androidx.fragment.app.Fragment() {
         val glideRequest = Glide.with(this)
         val currentDisplay = CurrentDisplay(DisplayUtil.getScreenWidthInPx(requireContext()), DisplayUtil.dpToPx(250, requireContext()))
 
-        photoAdapter = PhotoAdapter(glideRequest, currentDisplay)
+
+        val photoOnClickListener = object : OnItemClickListener<PhotoResponse> {
+            override fun onItemClick(view: View, item: PhotoResponse) {
+//                createTransitionToPhotoDetailScreen(view, item)
+            }
+        }
+
+        photoAdapter = PhotoAdapter(glideRequest, currentDisplay, photoOnClickListener)
         loadNewPhotos(page, perPage)
 
         val photosPreloader: RecyclerViewPreloader<PhotoResponse> =

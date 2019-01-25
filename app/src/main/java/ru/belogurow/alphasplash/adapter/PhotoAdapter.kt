@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.ListPreloader
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.RequestManager
@@ -13,53 +14,53 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withC
 import com.bumptech.glide.request.RequestOptions
 import ru.belogurow.alphasplash.R
 import ru.belogurow.alphasplash.util.CurrentDisplay
+import ru.belogurow.alphasplash.util.OnItemClickListener
 import ru.belogurow.unsplashclient.model.PhotoResponse
 
 // TODO REFACTOR TO https://developer.android.com/topic/libraries/architecture/paging/
 
 class PhotoAdapter(private var glideRequests: RequestManager,
-                   private var currentDisplay: CurrentDisplay): androidx.recyclerview.widget.RecyclerView.Adapter<PhotoAdapter.ViewHolder>(),
+                   private var currentDisplay: CurrentDisplay,
+                   private var photoClickListener: OnItemClickListener<PhotoResponse>): RecyclerView.Adapter<PhotoAdapter.ViewHolder>(),
         ListPreloader.PreloadModelProvider<PhotoResponse>,
         ListPreloader.PreloadSizeProvider<PhotoResponse> {
 
     private var requestBuilder: RequestBuilder<Drawable> = glideRequests.asDrawable()
 
-    var photos: MutableList<PhotoResponse> = mutableListOf()
-//        set(value) {
-//            field = value
-//            notifyDataSetChanged()
-//        }
+    private var photos: MutableList<PhotoResponse> = mutableListOf()
 
     fun addPhotos(newPhotos: List<PhotoResponse>) {
         val photoSize = photos.size
         photos.addAll(newPhotos)
         notifyItemRangeInserted(photoSize, newPhotos.size)
-//        notifyDataSetChanged()
-    }
-
-//    init {
-////        setHasStableIds(true)
-//
-//    }
-
-    class ViewHolder(val view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
-        var imageViewPhoto: ImageView = view.findViewById(R.id.item_photo_image2)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_photo2, parent, false))
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val photoResponse = photos[position]
+    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-        glideRequests
-                //.asDrawable()
-                .load(photoResponse.urls?.regular)
-                .transition(withCrossFade())
-                .apply(RequestOptions()
-                        .centerCrop().diskCacheStrategy(DiskCacheStrategy.RESOURCE))
-                .into(holder.imageViewPhoto)
+        var imageViewPhoto: ImageView = view.findViewById(R.id.item_photo_image2)
+
+        fun bind(photo: PhotoResponse, glideRequests: RequestManager, photoClickListener: OnItemClickListener<PhotoResponse>) {
+            glideRequests
+                    //.asDrawable()
+                    .load(photo.urls?.regular)
+                    .transition(withCrossFade())
+                    .apply(RequestOptions()
+                            .centerCrop().diskCacheStrategy(DiskCacheStrategy.RESOURCE))
+                    .into(imageViewPhoto)
+
+            imageViewPhoto.setOnClickListener { view ->  photoClickListener.onItemClick(view, photo)}
+        }
+
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(photos[position], glideRequests, photoClickListener)
+
+
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
@@ -70,8 +71,6 @@ class PhotoAdapter(private var glideRequests: RequestManager,
     }
 
     override fun getItemId(position: Int) = position.toLong()
-
-//    override fun getItemViewType(position: Int) = 0
 
     override fun getItemCount() = photos.size
 

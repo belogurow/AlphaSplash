@@ -15,6 +15,7 @@ import ru.belogurow.alphasplash.architecture.PhotoContract
 import ru.belogurow.alphasplash.util.CurrentDisplay
 import ru.belogurow.alphasplash.util.DisplayUtil
 import ru.belogurow.alphasplash.util.GlideApp
+import ru.belogurow.alphasplash.util.OnItemClickListener
 import ru.belogurow.unsplashclient.model.PhotoResponse
 
 
@@ -38,11 +39,17 @@ class PopularPhotoFragment : Fragment(), PhotoContract.View {
 
         with(root) {
 
+            val photoOnClickListener = object : OnItemClickListener<PhotoResponse> {
+                override fun onItemClick(view: View, item: PhotoResponse) {
+//                    createTransitionToPhotoDetailScreen(view, item)
+                }
+            }
+
             photosRecycler = findViewById<RecyclerView>(R.id.photos_list_recycler).apply {
                 val glideRequest = GlideApp.with(this@PopularPhotoFragment)
                 val currentDisplay = CurrentDisplay(DisplayUtil.getScreenWidthInPx(requireContext()), DisplayUtil.dpToPx(250, requireContext()))
 
-                photosAdapter = PhotoAdapter(glideRequest, currentDisplay)
+                photosAdapter = PhotoAdapter(glideRequest, currentDisplay, photoOnClickListener)
 
                 val photosPreloader: RecyclerViewPreloader<PhotoResponse> =
                         RecyclerViewPreloader(glideRequest, photosAdapter, photosAdapter, 6)

@@ -7,7 +7,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "ru.belogurow.alphasplash"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -36,6 +36,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:$androidx_version"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.0-alpha1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
@@ -62,4 +63,8 @@ dependencies {
     // Optional, if you use support library fragments:
     debugImplementation "com.squareup.leakcanary:leakcanary-support-fragment:$leakcanary_version"
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+
+    debugImplementation "com.github.brianPlummer:tinydancer:0.1.2"
+    releaseImplementation "com.github.brianPlummer:tinydancer-noop:0.1.2"
+    testImplementation "com.github.brianPlummer:tinydancer-noop:0.1.2"
 }
