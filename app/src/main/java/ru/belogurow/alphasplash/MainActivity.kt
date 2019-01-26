@@ -5,8 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.MemoryCategory
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import ru.belogurow.alphasplash.ui.latest.LatestPhotoFragment
-import ru.belogurow.alphasplash.ui.latest.LatestPhotoPresenter
+import ru.belogurow.alphasplash.ui.LatestPhotoFragment
 import ru.belogurow.alphasplash.ui.popular.PopularPhotoFragment
 import ru.belogurow.alphasplash.ui.popular.PopularPhotoPresenter
 import ru.belogurow.alphasplash.util.GlideApp
@@ -14,10 +13,10 @@ import ru.belogurow.alphasplash.util.GlideApp
 class MainActivity : AppCompatActivity() {
 
     private lateinit var popularPhotoPresenter: PopularPhotoPresenter
-    private lateinit var latestPhotoPresenter: LatestPhotoPresenter
+//    private lateinit var latestPhotoPresenter: LatestPhotoPresenter
 
     private val popularPhotoFragment = PopularPhotoFragment.newInstance()
-    private val latestPhotoFragment = LatestPhotoFragment.newInstance()
+    private val latestPhotoFragment = LatestPhotoFragment()
     private var currentFragment: Fragment = popularPhotoFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,13 +25,13 @@ class MainActivity : AppCompatActivity() {
         GlideApp.get(this@MainActivity).setMemoryCategory(MemoryCategory.HIGH);
 
         val photosRepository = PhotosRepositoryImpl()
-//        val popularPhotoFragment = PopularPhotoFragment.newInstance()
+        val popularPhotoFragment = PopularPhotoFragment.newInstance()
 //        val latestPhotoFragment = LatestPhotoFragment.newInstance()
 
 
         // Create the presenter
         popularPhotoPresenter = PopularPhotoPresenter(30, photosRepository, popularPhotoFragment)
-        latestPhotoPresenter = LatestPhotoPresenter(30, photosRepository, latestPhotoFragment)
+//        latestPhotoPresenter = LatestPhotoPresenter(30, photosRepository, latestPhotoFragment)
 
         // add first fragment
         addFragment(popularPhotoFragment)

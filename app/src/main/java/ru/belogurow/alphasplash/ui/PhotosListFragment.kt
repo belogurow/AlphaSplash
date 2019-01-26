@@ -1,11 +1,9 @@
 package ru.belogurow.alphasplash.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -14,7 +12,10 @@ import kotlinx.coroutines.*
 import ru.belogurow.alphasplash.Application
 import ru.belogurow.alphasplash.R
 import ru.belogurow.alphasplash.adapter.PhotoAdapter
-import ru.belogurow.alphasplash.util.*
+import ru.belogurow.alphasplash.util.Const
+import ru.belogurow.alphasplash.util.CurrentDisplay
+import ru.belogurow.alphasplash.util.DisplayUtil
+import ru.belogurow.alphasplash.util.OnItemClickListener
 import ru.belogurow.unsplashclient.UnsplashClient
 import ru.belogurow.unsplashclient.model.PhotoResponse
 
@@ -45,9 +46,9 @@ class PhotosListFragment : androidx.fragment.app.Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(LatestPhotoViewModel::class.java)
 
-        viewModel.load(page, perPage).observe(this, Observer {
-            photoAdapter.addPhotos(it)
-        })
+//        viewModel.load(page, perPage).observe(this, Observer {
+//            photoAdapter.addPhotos(it)
+//        })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,17 +89,17 @@ class PhotosListFragment : androidx.fragment.app.Fragment() {
         val photosPreloader: RecyclerViewPreloader<PhotoResponse> =
                 RecyclerViewPreloader(glideRequest, photoAdapter, photoAdapter, 6)
 
-        val endlessRecyclerViewScrollListener = object : EndlessRecyclerViewScrollListener(layoutManager) {
-            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                Log.d("page", page.toString())
-                Log.d("totalItemsCount", totalItemsCount.toString())
-                loadNewPhotos(page, perPage)
-            }
-
-        }
+//        val endlessRecyclerViewScrollListener = object : EndlessRecyclerViewScrollListener(layoutManager) {
+//            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
+//                Log.d("page", page.toString())
+//                Log.d("totalItemsCount", totalItemsCount.toString())
+//                loadNewPhotos(page, perPage)
+//            }
+//
+//        }
 
         recyclerViewPhotos.addOnScrollListener(photosPreloader)
-        recyclerViewPhotos.addOnScrollListener(endlessRecyclerViewScrollListener)
+//        recyclerViewPhotos.addOnScrollListener(endlessRecyclerViewScrollListener)
         recyclerViewPhotos.adapter = photoAdapter
     }
 
