@@ -6,4 +6,6 @@
 
     <color name="bottom_item_checked">#ffffff</color>
 	<color name="bottom_item_unchecked">#a6a6a6</color>
+
+	<color name="photo_detail_background_photo">#4A148C</color>
 </resources>

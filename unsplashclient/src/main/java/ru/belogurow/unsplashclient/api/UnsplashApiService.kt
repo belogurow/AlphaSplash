@@ -17,5 +17,9 @@ internal interface UnsplashApiService {
     @GET("photos/{id}")
     fun photoById(@Path("id") photoId: String): Deferred<Response<PhotoResponse>>
 
+    @GET("/collections/featured")
+    fun featuredPhotos(@Query("page") page: String,
+                       @Query("per_page") perPage: String): Deferred<Response<List<PhotoResponse>>>
+
 
 }

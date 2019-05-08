@@ -8,7 +8,8 @@ import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.module.AppGlideModule
 import com.bumptech.glide.request.RequestOptions
-
+import ru.belogurow.unsplashclient.model.PhotoResponse
+import java.io.InputStream
 
 
 @GlideModule
@@ -19,7 +20,7 @@ class GlideModule: AppGlideModule() {
     }
 
     override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
-//        registry.append(PhotoResponse::class.java, InputStream::class.java, )
+        registry.append(PhotoResponse::class.java, InputStream::class.java, PhotoModelLoader.Factory())
     }
 
 

@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.DiffUtil
 import com.bumptech.glide.ListPreloader
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.RequestManager
-import com.bumptech.glide.request.RequestOptions
 import ru.belogurow.alphasplash.util.CurrentDisplay
 import ru.belogurow.alphasplash.util.OnItemClickListener
 import ru.belogurow.unsplashclient.model.PhotoResponse
@@ -54,8 +53,8 @@ class PhotoPagingAdapter(private var glideRequests: RequestManager,
     override fun getPreloadRequestBuilder(item: PhotoResponse): RequestBuilder<*>? {
         return glideRequests
                 .load(item)
-                .apply(RequestOptions()
-                        .override(currentDisplay.widthPx, currentDisplay.heightPx))
+//                .apply(RequestOptions()
+//                        .override(currentDisplay.widthPx, currentDisplay.heightPx))
 //                .transition(withCrossFade())
 
     }

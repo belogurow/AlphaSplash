@@ -1,6 +1,5 @@
 package ru.belogurow.alphasplash.ui
 
-//import kotlinx.coroutines.android.Main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations

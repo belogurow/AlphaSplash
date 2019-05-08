@@ -57,4 +57,6 @@ class UnsplashClient(private val ACCESS_KEY: String) {
      *
      */
     fun photoById(photoId: String) = unsplashRepository.photoById(photoId)
+
+    fun featuredPhotos(page: Int, perPage: Int) = unsplashRepository.featuredPhotos(page, perPage)
 }

@@ -6,35 +6,28 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.MemoryCategory
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import ru.belogurow.alphasplash.ui.LatestPhotoFragment
-import ru.belogurow.alphasplash.ui.popular.PopularPhotoFragment
-import ru.belogurow.alphasplash.ui.popular.PopularPhotoPresenter
+import ru.belogurow.alphasplash.ui.PhotosListFragment
 import ru.belogurow.alphasplash.util.GlideApp
+import ru.belogurow.unsplashclient.model.PhotoSort
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var popularPhotoPresenter: PopularPhotoPresenter
-//    private lateinit var latestPhotoPresenter: LatestPhotoPresenter
+    private lateinit var latestPhotoFragment: Fragment
+    private lateinit var featuredPhotoFragment: Fragment
 
-    private val popularPhotoFragment = PopularPhotoFragment.newInstance()
-    private val latestPhotoFragment = LatestPhotoFragment()
-    private var currentFragment: Fragment = popularPhotoFragment
+    private var currentFragment: Fragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        GlideApp.get(this@MainActivity).setMemoryCategory(MemoryCategory.HIGH);
-
-        val photosRepository = PhotosRepositoryImpl()
-        val popularPhotoFragment = PopularPhotoFragment.newInstance()
-//        val latestPhotoFragment = LatestPhotoFragment.newInstance()
+        GlideApp.get(this@MainActivity).setMemoryCategory(MemoryCategory.NORMAL);
 
 
-        // Create the presenter
-        popularPhotoPresenter = PopularPhotoPresenter(30, photosRepository, popularPhotoFragment)
-//        latestPhotoPresenter = LatestPhotoPresenter(30, photosRepository, latestPhotoFragment)
+        featuredPhotoFragment = PhotosListFragment.newInstance(PhotoSort.FEATURED)
+        latestPhotoFragment = LatestPhotoFragment.newInstance()
 
         // add first fragment
-        addFragment(popularPhotoFragment)
+        addFragment(featuredPhotoFragment)
 
         findViewById<BottomNavigationView>(R.id.main_bottom_navigation).apply {
             setOnNavigationItemSelectedListener(navigationItemSelectedListener)
@@ -49,21 +42,15 @@ class MainActivity : AppCompatActivity() {
 
     private val navigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
-            R.id.action_popular -> {
-//                toolbar.title = "Songs"
-//                val popularPhotoFragment = PopularPhotoFragment.newInstance()
-                openFragment(popularPhotoFragment)
+            R.id.action_featured -> {
+                openFragment(featuredPhotoFragment)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.action_latest -> {
-//                toolbar.title = "Albums"
-//                val latestPhotoFragment = LatestPhotoFragment.newInstance()
                 openFragment(latestPhotoFragment)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.action_favorites -> {
-//                toolbar.title = "Artists"
-//                val artistsFragment = ArtistsFragment.newInstance()
 //                openFragment(artistsFragment)
                 return@OnNavigationItemSelectedListener true
             }
@@ -78,10 +65,12 @@ class MainActivity : AppCompatActivity() {
 
         addFragment(newFragment)
 
-        supportFragmentManager.beginTransaction()
-                .hide(currentFragment)
-                .show(newFragment)
-                .commit()
+        currentFragment?.let {
+            supportFragmentManager.beginTransaction()
+                    .hide(it)
+                    .show(newFragment)
+                    .commit()
+        }
 
         currentFragment = newFragment
     }

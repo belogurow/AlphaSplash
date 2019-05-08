@@ -1,127 +1,95 @@
 package ru.belogurow.alphasplash.ui
 
+import android.app.ActivityOptions
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
-import kotlinx.coroutines.*
-import ru.belogurow.alphasplash.Application
+import ru.belogurow.alphasplash.PhotoDetailActivity
 import ru.belogurow.alphasplash.R
-import ru.belogurow.alphasplash.adapter.PhotoAdapter
-import ru.belogurow.alphasplash.util.Const
-import ru.belogurow.alphasplash.util.CurrentDisplay
-import ru.belogurow.alphasplash.util.DisplayUtil
-import ru.belogurow.alphasplash.util.OnItemClickListener
-import ru.belogurow.unsplashclient.UnsplashClient
+import ru.belogurow.alphasplash.adapter.PhotoPagingAdapter
+import ru.belogurow.alphasplash.ui.popular.PopularPhotoFragment
+import ru.belogurow.alphasplash.util.*
 import ru.belogurow.unsplashclient.model.PhotoResponse
+import ru.belogurow.unsplashclient.model.PhotoSort
 
+class PhotosListFragment : Fragment() {
 
-class PhotosListFragment : androidx.fragment.app.Fragment() {
-
-    private val TAG = PhotosListFragment::class.java.simpleName
-
-    private lateinit var recyclerViewPhotos: androidx.recyclerview.widget.RecyclerView
-    private lateinit var photoAdapter: PhotoAdapter
-    private val unsplashClient = UnsplashClient(Const.UNSPLASH_KEY)
-
-    private var parentJob = Dispatchers.Main + Job()
-
-    private var page = 1
-    private var perPage = 30
+    private val TAG = PopularPhotoFragment::class.java.simpleName
 
     private lateinit var viewModel: LatestPhotoViewModel
+    private lateinit var photosRecycler: RecyclerView
+    private lateinit var photosAdapter: PhotoPagingAdapter
 
-//    companion object {
-//        @JvmStatic
-//        fun newInstance() = PhotosListFragment().apply {
-//            arguments = Bundle().apply {}
-//        }
-//    }
+    companion object {
+        fun newInstance(photoSort: PhotoSort) = PhotosListFragment().apply {
+            arguments = bundleOf(Const.ARG_PHOTO_SORT to photoSort)
+        }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        val root = inflater.inflate(R.layout.popular_photo_fragment, container, false)
+
+        with(root) {
+
+            val photoOnClickListener = object : OnItemClickListener<PhotoResponse> {
+                override fun onItemClick(view: View, item: PhotoResponse) {
+                    createTransitionToPhotoDetailScreen(view, item)
+                }
+            }
+
+            photosRecycler = findViewById<RecyclerView>(R.id.photos_list_recycler).apply {
+                val glideRequest = GlideApp.with(this@PhotosListFragment)
+                val currentDisplay = CurrentDisplay(DisplayUtil.getScreenWidthInPx(requireContext()), DisplayUtil.dpToPx(450, requireContext()))
+
+                photosAdapter = PhotoPagingAdapter(glideRequest, currentDisplay, photoOnClickListener)
+
+                val photosPreloader: RecyclerViewPreloader<PhotoResponse> =
+                        RecyclerViewPreloader(glideRequest, photosAdapter, photosAdapter, 6)
+
+                layoutManager = LinearLayoutManager(root.context)
+                adapter = photosAdapter
+                setHasFixedSize(true)
+                addOnScrollListener(photosPreloader)
+            }
+        }
+
+        return root
+    }
+
+    fun createTransitionToPhotoDetailScreen(view: View, photo: PhotoResponse) {
+        val intent = Intent(activity, PhotoDetailActivity::class.java)
+        intent.putExtra(Const.EXTRA_PHOTO_RESPONSE_ITEM, photo);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val options = ActivityOptions.makeSceneTransitionAnimation(activity, view, activity?.getString(R.string.image_transition_to_photo_detail))
+            activity?.startActivity(intent, options.toBundle())
+        } else {
+            activity?.startActivity(intent)
+        }
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(LatestPhotoViewModel::class.java)
 
-//        viewModel.load(page, perPage).observe(this, Observer {
-//            photoAdapter.addPhotos(it)
-//        })
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        retainInstance = true
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_photos_list, container, false)
-
-        initViews(view)
-
-        return view
-    }
-
-    private fun initViews(view: View) {
-        recyclerViewPhotos = view.findViewById(R.id.frag_photos_list_recycler)
-
-        val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
-        layoutManager.orientation = androidx.recyclerview.widget.RecyclerView.VERTICAL
-        recyclerViewPhotos.layoutManager = layoutManager
-        recyclerViewPhotos.setHasFixedSize(true)
-
-        val glideRequest = Glide.with(this)
-        val currentDisplay = CurrentDisplay(DisplayUtil.getScreenWidthInPx(requireContext()), DisplayUtil.dpToPx(250, requireContext()))
-
-
-        val photoOnClickListener = object : OnItemClickListener<PhotoResponse> {
-            override fun onItemClick(view: View, item: PhotoResponse) {
-//                createTransitionToPhotoDetailScreen(view, item)
+        viewModel.latestPhotosPaging.observe(this@PhotosListFragment, Observer {
+            it?.let {
+                photosAdapter.submitList(it)
             }
-        }
+        })
 
-        photoAdapter = PhotoAdapter(glideRequest, currentDisplay, photoOnClickListener)
-        loadNewPhotos(page, perPage)
-
-        val photosPreloader: RecyclerViewPreloader<PhotoResponse> =
-                RecyclerViewPreloader(glideRequest, photoAdapter, photoAdapter, 6)
-
-//        val endlessRecyclerViewScrollListener = object : EndlessRecyclerViewScrollListener(layoutManager) {
-//            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-//                Log.d("page", page.toString())
-//                Log.d("totalItemsCount", totalItemsCount.toString())
-//                loadNewPhotos(page, perPage)
-//            }
-//
-//        }
-
-        recyclerViewPhotos.addOnScrollListener(photosPreloader)
-//        recyclerViewPhotos.addOnScrollListener(endlessRecyclerViewScrollListener)
-        recyclerViewPhotos.adapter = photoAdapter
+        viewModel.loadPhotos()
     }
 
-    private fun loadNewPhotos(page: Int, perPage: Int) {
-        GlobalScope.launch(parentJob) {
-            val photosDeferred = withContext(Dispatchers.IO) { unsplashClient.latestPhotos(page, perPage) }
-
-            val photosResult = photosDeferred.await()
-
-            if (photosResult.isSuccessful && photosResult.code() == 200 && photosResult.body() != null) {
-//                photoAdapter.photos = result.body()
-//                Toast.makeText(context, "loaded", Toast.LENGTH_SHORT).show()
-                photoAdapter.addPhotos(photosResult.body()!!)
-            }
-        }
-
-        this.page += 1
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        parentJob.cancel()
-        Application.watchObject(this)
-    }
 }

@@ -10,18 +10,20 @@
 
     <style name="AppTheme.MainActivity" parent="AppTheme">
         <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowContentTransitions">true</item>
+
+        <item name="android:windowSharedElementEnterTransition">@transition/photo_detail_enter_transition</item>
+
+        <item name="android:windowSharedElementExitTransition">@transition/photo_detail_exit_transition</item>
     </style>
 
     <style name="AppTheme.PhotoDetailActivity" parent="AppTheme">
         <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowContentTransitions">true</item>
 
-        <item name="android:windowSharedElementEnterTransition">
-            @transition/photo_detail_transition
-        </item>
+        <item name="android:windowSharedElementEnterTransition">@transition/photo_detail_enter_transition</item>
 
-        <item name="android:windowSharedElementExitTransition">
-            @transition/photo_detail_transition
-        </item>
+        <item name="android:windowSharedElementExitTransition">@transition/photo_detail_exit_transition</item>
     </style>
 
 </resources>
