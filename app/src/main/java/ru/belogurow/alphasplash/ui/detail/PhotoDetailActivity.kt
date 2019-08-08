@@ -1,4 +1,4 @@
-package ru.belogurow.alphasplash
+package ru.belogurow.alphasplash.ui.detail
 
 import android.Manifest
 import android.app.WallpaperManager
@@ -18,10 +18,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
 import com.google.android.material.button.MaterialButton
+import ru.belogurow.alphasplash.R
 import ru.belogurow.alphasplash.util.Const
 import ru.belogurow.alphasplash.util.CurrentDisplay
 import ru.belogurow.alphasplash.util.DisplayUtil
@@ -35,27 +37,16 @@ class PhotoDetailActivity : AppCompatActivity() {
     private val TAG = PhotoDetailActivity::class.java.simpleName
     private val RECORD_REQUEST_CODE = 103
 
+    private lateinit var imagePhoto: ImageView
+    private lateinit var glideRequests: RequestManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo_detail)
 
         val photoResponse: PhotoResponse? = intent.extras?.getParcelable(Const.EXTRA_PHOTO_RESPONSE_ITEM)
 
-        val currentDisplay = CurrentDisplay(DisplayUtil.getScreenWidthInPx(applicationContext), DisplayUtil.dpToPx(450, applicationContext))
-
-
-        val imagePhoto = findViewById<ImageView>(R.id.image_photo_detail).apply {
-            GlideApp.with(this@PhotoDetailActivity)
-                    .load(photoResponse?.urls?.regular)
-                    .apply(RequestOptions()
-//                            .centerCrop()
-//                            .dontAnimate()
-//                            .fitCenter()
-                            .override(currentDisplay.widthPx, currentDisplay.heightPx)
-                            .signature(ObjectKey(photoResponse?.id!!))
-                            .diskCacheStrategy(DiskCacheStrategy.DATA))
-                    .into(this)
-        }
+        loadPhoto(photoResponse)
 
         val buttonSetWallpaper = findViewById<MaterialButton>(R.id.button_set_wallpaper).apply {
             setOnClickListener {
@@ -63,6 +54,7 @@ class PhotoDetailActivity : AppCompatActivity() {
                     val wallpaperManager = WallpaperManager.getInstance(this@PhotoDetailActivity)
 
                     val bitmap = (imagePhoto.drawable as BitmapDrawable).bitmap
+//                    wallpaperManager.setBitmap(bitmap)
                     val intent = wallpaperManager.getCropAndSetWallpaperIntent(getImageUri(this@PhotoDetailActivity, bitmap, "image"))
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
@@ -77,6 +69,22 @@ class PhotoDetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+    private fun loadPhoto(photoResponse: PhotoResponse?) {
+        val currentDisplay = CurrentDisplay(DisplayUtil.getScreenWidthInPx(applicationContext), DisplayUtil.dpToPx(450, applicationContext))
+
+        glideRequests = GlideApp.with(this@PhotoDetailActivity)
+
+        imagePhoto = findViewById<ImageView>(R.id.image_photo_detail).apply {
+            glideRequests
+                    .load(photoResponse?.urls?.regular)
+                    .apply(RequestOptions()
+                            .override(currentDisplay.widthPx, currentDisplay.heightPx)
+                            .signature(ObjectKey(photoResponse?.id!!))
+                            .diskCacheStrategy(DiskCacheStrategy.DATA))
+                    .into(this)
+        }
+    }
+
 
     private fun getImageUri(context: Context, imageBitmap: Bitmap, fileName: String): Uri {
         val bytes = ByteArrayOutputStream()
@@ -85,7 +93,7 @@ class PhotoDetailActivity : AppCompatActivity() {
         return Uri.parse(uri)
     }
 
-    private fun setupPermissions() : Boolean {
+    private fun setupPermissions(): Boolean {
         val permission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
@@ -131,7 +139,10 @@ class PhotoDetailActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
+    override fun onDestroy() {
+        super.onDestroy()
+
+        glideRequests.clear(imagePhoto)
+        imagePhoto.setImageDrawable(null)
     }
 }

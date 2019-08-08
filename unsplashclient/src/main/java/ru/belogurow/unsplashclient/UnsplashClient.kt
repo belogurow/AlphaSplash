@@ -31,7 +31,7 @@ class UnsplashClient(private val ACCESS_KEY: String) {
      *
      * @return Object Call of PhotoResponse
      */
-    fun latestPhotos(page: Int, perPage: Int) = unsplashRepository.photos(page, perPage, PhotoSort.LATEST)
+    suspend fun latestPhotos(page: Int, perPage: Int) = unsplashRepository.photos(page, perPage, PhotoSort.LATEST)
 
     /**
      * Get a single page from the list of oldest photos.
@@ -41,7 +41,7 @@ class UnsplashClient(private val ACCESS_KEY: String) {
      *
      * @return Object Call of PhotoResponse
      */
-    fun oldestPhotos(page: Int, perPage: Int) = unsplashRepository.photos(page, perPage, PhotoSort.OLDEST)
+    suspend fun oldestPhotos(page: Int, perPage: Int) = unsplashRepository.photos(page, perPage, PhotoSort.OLDEST)
 
     /**
      * Get a single page from the list of popular photos.
@@ -51,12 +51,13 @@ class UnsplashClient(private val ACCESS_KEY: String) {
      *
      * @return Object Call of PhotoResponse
      */
-    fun popularPhotos(page: Int, perPage: Int) = unsplashRepository.photos(page, perPage, PhotoSort.POPULAR)
+    suspend fun popularPhotos(page: Int, perPage: Int) = unsplashRepository.photos(page, perPage, PhotoSort.POPULAR)
 
+    suspend fun photos(page: Int, perPage: Int, photoSort: PhotoSort) = unsplashRepository.photos(page, perPage, photoSort)
     /**
      *
      */
-    fun photoById(photoId: String) = unsplashRepository.photoById(photoId)
+    suspend fun photoById(photoId: String) = unsplashRepository.photoById(photoId)
 
-    fun featuredPhotos(page: Int, perPage: Int) = unsplashRepository.featuredPhotos(page, perPage)
+    suspend fun featuredPhotos(page: Int, perPage: Int) = unsplashRepository.featuredPhotos(page, perPage)
 }

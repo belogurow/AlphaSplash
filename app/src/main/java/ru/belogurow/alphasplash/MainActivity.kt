@@ -5,8 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.MemoryCategory
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import ru.belogurow.alphasplash.ui.LatestPhotoFragment
-import ru.belogurow.alphasplash.ui.PhotosListFragment
+import ru.belogurow.alphasplash.ui.featured.FeaturedPhotoFragment
+import ru.belogurow.alphasplash.ui.latest.LatestPhotoFragment
 import ru.belogurow.alphasplash.util.GlideApp
 import ru.belogurow.unsplashclient.model.PhotoSort
 
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         GlideApp.get(this@MainActivity).setMemoryCategory(MemoryCategory.NORMAL);
 
 
-        featuredPhotoFragment = PhotosListFragment.newInstance(PhotoSort.FEATURED)
+        featuredPhotoFragment = FeaturedPhotoFragment.newInstance(PhotoSort.FEATURED)
         latestPhotoFragment = LatestPhotoFragment.newInstance()
 
         // add first fragment
@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Application.watchObject(this)
+
     }
 
     private val navigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->

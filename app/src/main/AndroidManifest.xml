@@ -31,7 +31,7 @@
         </activity>
 
         <activity
-            android:name=".PhotoDetailActivity"
+            android:name=".ui.detail.PhotoDetailActivity"
             android:theme="@style/AppTheme.PhotoDetailActivity">
         </activity>
     </application>

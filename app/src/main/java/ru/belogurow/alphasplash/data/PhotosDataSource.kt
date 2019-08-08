@@ -3,14 +3,18 @@ package ru.belogurow.alphasplash.data
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import ru.belogurow.alphasplash.util.Const
 import ru.belogurow.unsplashclient.UnsplashClient
 import ru.belogurow.unsplashclient.model.PhotoResponse
+import ru.belogurow.unsplashclient.model.PhotoSort
 import kotlin.coroutines.CoroutineContext
 
 class PhotosDataSource(
-//        photoSort: PhotoSort
+        private val photoSort: PhotoSort
 ) : PageKeyedDataSource<Int, PhotoResponse>(), CoroutineScope {
 
     private val job = Job()
@@ -32,24 +36,28 @@ class PhotosDataSource(
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, PhotoResponse>) {
         this.launch {
-            val photosResponse = withContext(Dispatchers.IO) { unsplashClient.latestPhotos(
+            val photosResponse = unsplashClient.photos(
                     page = 1,
-                    perPage = params.requestedLoadSize) }.await()
+                    perPage = params.requestedLoadSize,
+                    photoSort = photoSort)
 
             if (photosResponse.isSuccessful) {
-                callback.onResult(photosResponse.body()?.toMutableList()!!, null, 2)
+                val responseList = photosResponse.body()?.toMutableList() ?: emptyList<PhotoResponse>()
+                callback.onResult(responseList, null, 2)
             }
         }
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, PhotoResponse>) {
         this.launch {
-            val photosResponse = withContext(Dispatchers.IO) { unsplashClient.latestPhotos(
+            val photosResponse = unsplashClient.photos(
                     page = params.key,
-                    perPage = params.requestedLoadSize) }.await()
+                    perPage = params.requestedLoadSize,
+                    photoSort = photoSort)
 
             if (photosResponse.isSuccessful) {
-                callback.onResult(photosResponse.body()?.toMutableList()!!, params.key + 1)
+                val responseList = photosResponse.body()?.toMutableList() ?: emptyList<PhotoResponse>()
+                callback.onResult(responseList, params.key + 1)
             }
         }
 

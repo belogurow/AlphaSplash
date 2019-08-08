@@ -1,6 +1,5 @@
 package ru.belogurow.unsplashclient.api
 
-import kotlinx.coroutines.Deferred
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -10,16 +9,16 @@ import ru.belogurow.unsplashclient.model.PhotoResponse
 internal interface UnsplashApiService {
 
     @GET("photos")
-    fun photos(@Query("page") page: String,
-               @Query("per_page") perPage: String,
-               @Query("order_by") orderBy: String): Deferred<Response<List<PhotoResponse>>>
+    suspend fun photos(@Query("page") page: String,
+                       @Query("per_page") perPage: String,
+                       @Query("order_by") orderBy: String): Response<List<PhotoResponse>>
 
     @GET("photos/{id}")
-    fun photoById(@Path("id") photoId: String): Deferred<Response<PhotoResponse>>
+    suspend fun photoById(@Path("id") photoId: String): Response<PhotoResponse>
 
     @GET("/collections/featured")
-    fun featuredPhotos(@Query("page") page: String,
-                       @Query("per_page") perPage: String): Deferred<Response<List<PhotoResponse>>>
+    suspend fun featuredPhotos(@Query("page") page: String,
+                               @Query("per_page") perPage: String): Response<List<PhotoResponse>>
 
 
 }

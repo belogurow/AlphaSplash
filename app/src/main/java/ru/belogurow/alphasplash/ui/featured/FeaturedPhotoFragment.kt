@@ -1,4 +1,4 @@
-package ru.belogurow.alphasplash.ui
+package ru.belogurow.alphasplash.ui.featured
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -14,24 +14,26 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
-import ru.belogurow.alphasplash.PhotoDetailActivity
 import ru.belogurow.alphasplash.R
 import ru.belogurow.alphasplash.adapter.PhotoPagingAdapter
-import ru.belogurow.alphasplash.ui.popular.PopularPhotoFragment
+import ru.belogurow.alphasplash.ui.detail.PhotoDetailActivity
+import ru.belogurow.alphasplash.ui.latest.PhotoViewModel
 import ru.belogurow.alphasplash.util.*
 import ru.belogurow.unsplashclient.model.PhotoResponse
 import ru.belogurow.unsplashclient.model.PhotoSort
 
-class PhotosListFragment : Fragment() {
+class FeaturedPhotoFragment : Fragment() {
 
-    private val TAG = PopularPhotoFragment::class.java.simpleName
+    private val TAG = FeaturedPhotoFragment::class.java.simpleName
 
-    private lateinit var viewModel: LatestPhotoViewModel
+    private lateinit var viewModel: PhotoViewModel
+    private lateinit var viewModelFactory: PhotosViewModelFactory
+
     private lateinit var photosRecycler: RecyclerView
     private lateinit var photosAdapter: PhotoPagingAdapter
 
     companion object {
-        fun newInstance(photoSort: PhotoSort) = PhotosListFragment().apply {
+        fun newInstance(photoSort: PhotoSort) = FeaturedPhotoFragment().apply {
             arguments = bundleOf(Const.ARG_PHOTO_SORT to photoSort)
         }
     }
@@ -49,7 +51,7 @@ class PhotosListFragment : Fragment() {
             }
 
             photosRecycler = findViewById<RecyclerView>(R.id.photos_list_recycler).apply {
-                val glideRequest = GlideApp.with(this@PhotosListFragment)
+                val glideRequest = GlideApp.with(this@FeaturedPhotoFragment)
                 val currentDisplay = CurrentDisplay(DisplayUtil.getScreenWidthInPx(requireContext()), DisplayUtil.dpToPx(450, requireContext()))
 
                 photosAdapter = PhotoPagingAdapter(glideRequest, currentDisplay, photoOnClickListener)
@@ -81,9 +83,12 @@ class PhotosListFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(LatestPhotoViewModel::class.java)
 
-        viewModel.latestPhotosPaging.observe(this@PhotosListFragment, Observer {
+        viewModelFactory = PhotosViewModelFactory(PhotoSort.FEATURED)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(PhotoViewModel::class.java)
+
+
+        viewModel.latestPhotosPaging.observe(this@FeaturedPhotoFragment, Observer {
             it?.let {
                 photosAdapter.submitList(it)
             }

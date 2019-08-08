@@ -14,7 +14,7 @@ class PhotoModelLoader(
 
 
     override fun getUrl(model: PhotoResponse?, width: Int, height: Int, options: Options): String {
-        return model?.urls?.regular!!
+        return model?.urls?.regular ?: ""
     }
 
     override fun handles(model: PhotoResponse): Boolean {

@@ -1,4 +1,4 @@
-package ru.belogurow.alphasplash.ui
+package ru.belogurow.alphasplash.ui.latest
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,9 +11,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import ru.belogurow.alphasplash.data.PhotoDataFactory
 import ru.belogurow.unsplashclient.model.PhotoResponse
+import ru.belogurow.unsplashclient.model.PhotoSort
 import kotlin.coroutines.CoroutineContext
 
-class LatestPhotoViewModel : ViewModel(), CoroutineScope {
+class PhotoViewModel(
+        private val photoSort: PhotoSort
+) : ViewModel(), CoroutineScope {
 
 //    val latestPhotos: MutableLiveData<List<PhotoResponse>> by lazy { MutableLiveData<List<PhotoResponse>>() }
 //    private val page: MutableLiveData<Int> by lazy { MutableLiveData<Int>() }
@@ -57,8 +60,8 @@ class LatestPhotoViewModel : ViewModel(), CoroutineScope {
 //        return latestPhotos
 //    }
 
-    fun loadNextPhotos() : LiveData<PagedList<PhotoResponse>> {
-        val dataFactory = PhotoDataFactory()
+    fun loadNextPhotos(): LiveData<PagedList<PhotoResponse>> {
+        val dataFactory = PhotoDataFactory(photoSort)
 
         val config = PagedList.Config.Builder()
                 .setPrefetchDistance(10)
@@ -70,7 +73,6 @@ class LatestPhotoViewModel : ViewModel(), CoroutineScope {
                 .setInitialLoadKey(1)
                 .build()
 
-//        latestPhotosPaging = data
         return data
     }
 
@@ -83,7 +85,4 @@ class LatestPhotoViewModel : ViewModel(), CoroutineScope {
         job.cancel()
     }
 
-//    private fun increasePage() {
-//        page.value = page.value!! + 1
-//    }
 }
