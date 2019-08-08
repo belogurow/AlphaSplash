@@ -1,12 +1,3 @@
 <resources>
-	<string name="app_name">AlphaSplash</string>
-
-	<!-- TODO: Remove or change this placeholder text -->
-	<string name="hello_blank_fragment">Hello blank fragment</string>
-
-	<string name="popular">Popular</string>
-	<string name="featured">Featured</string>
-	<string name="latest">Latest</string>
-	<string name="favorites">Favorites</string>
-	<string name="image_transition_to_photo_detail">Image transition to photo detail</string>
+    <string name="app_name">AlphaSplash</string>
 </resources>

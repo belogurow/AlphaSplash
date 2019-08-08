@@ -1,1 +1,1 @@
-include ':app', ':unsplashclient'
+include ':app'

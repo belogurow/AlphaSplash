@@ -3,9 +3,4 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-
-    <color name="bottom_item_checked">#ffffff</color>
-	<color name="bottom_item_unchecked">#a6a6a6</color>
-
-	<color name="photo_detail_background_photo">#000000</color>
 </resources>
