@@ -1,7 +1,10 @@
 package ru.belogurow.unsplashclient.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class UserLinks(
 
         @field:SerializedName("self")
@@ -24,5 +27,5 @@ data class UserLinks(
 
         @field:SerializedName("followers")
         var followers: String? = null
-)
+) : Parcelable
 
